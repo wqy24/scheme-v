@@ -1,0 +1,13 @@
+64(32)bit+inexact
+use a f reg to store type & gc marks and a x reg to store bare data
+on: RV64(32)I(MA)F(D if 64bit)
+
+64(32)bit-noinexact
+use a pair of x reg to store data
+on:RV64(32)I(MA)
+
+64(32)bit+soft-inexact
+on:RV64(32)I(MA)
+
+32bit-embedded
+on:RV32E(MAF)
