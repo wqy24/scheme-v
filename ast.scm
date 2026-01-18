@@ -1,17 +1,23 @@
 (define-library (scheme-v ast)
- (import (scheme base) (scheme case-lambda))
+ (import (scheme base) (scheme case-lambda) (srfi 1))
  (export (rename realexp ast->three))
  (begin
   (define counter 0)
   (define (gen-sym)
-   (string->symbol (number->string (begin (set! counter (+ counter 1)) counter))))
-  (define ast->three
-   (case-lambda
-    [(fn arg) (if (pair? arg) (let [[t (gen-sym)]] (list 'let t (apply ast->three arg) (list fn t))) (list fn arg))]
-    [(fn arg1 arg2)
-     (cond
-      [(pair? arg1) (let [[t (gen-sym)]] (list 'let t (apply ast->three arg1) (ast->three fn t arg2)))]
-      [(pair? arg2) (let [[t (gen-sym)]] (list 'let t (apply ast->three arg2) (list fn arg1 t)))]
-      [else (list fn arg1 arg2)])]
-    [(fn arg1 arg2 arg3) (if (symbol=? fn 'let) (list fn arg1 (realexp arg2) (realexp arg3)) (error "Output syntax error" "The only 3-arg form is `let'"))]))
-  (define (realexp obj) (if (pair? obj) (apply ast->three obj) obj))))
+   (string->symbol (append "wqy24's scheme-v - internal temperony symbol" (number->string (begin (set! counter (+ counter 1)) counter)))))
+  (define (ast->three obj)
+   (if (pair? obj)
+    (let* [[bindings (map (lambda (x) (cons (filter pair? obj) (gen-sym))))]
+           [bindings-x bindings]
+           [t-obj (map (lambda (x)
+                        (if (pair? x)
+                         (let [[s (cdar bindings-x)]]
+                          (set! bindings-x (cdr bindings-x))
+                          s)))
+                       obj)]]
+     (let loop [[bindings-2 bindings]
+                [tt-obj t-obj]]
+      (if (null? bindings-2)
+       tt-obj
+       (loop (cdr bindings-2) (list 'let (cdar bindings-2) (caar bindings-2) tt-obj)r))))
+    obj))))
